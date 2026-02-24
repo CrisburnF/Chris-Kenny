@@ -1,336 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Save The Date - Crisburn & Kenny</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crisburn & Kenny | Save The Date</title>
 
-    <style>
-        /* --- Theming & Variables --- */
-        :root {
-            --bg-color: #e8ded1;
-            --env-color: #f4eee6;
-            --env-shadow: #d4c5b3;
-            --card-color: #ffffff;
-            --gold-light: #fcf6ba;
-            --gold-dark: #aa771c;
-            --gold-gradient: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-            --text-dark: #333333;
-        }
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+:root{
+  --sage:#9CAF88;
+  --beige:#f4efe8;
+  --cream:#fffaf3;
+  --gold:#c6a85a;
+  --shadow:rgba(0,0,0,0.15);
+}
 
-        body {
-            background: radial-gradient(circle at center, var(--bg-color) 0%, #c4b5a2 100%);
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Playfair Display', serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-        /* Cinematic Vignette */
-        .vignette {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            box-shadow: inset 0 0 200px rgba(0,0,0,0.5);
-            pointer-events: none;
-            z-index: 10;
-        }
+body{
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: radial-gradient(circle at center, #f8f4ee 0%, #eae3d9 100%);
+  font-family:'Playfair Display', serif;
+  overflow:hidden;
+}
 
-        /* Floating Dust Particles */
-        #dust-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
+/* Scene Perspective */
+.scene{
+  perspective:1200px;
+}
 
-        .dust {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            filter: blur(2px);
-        }
+/* Envelope Container */
+.envelope-wrapper{
+  width:320px;
+  height:220px;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform 1.5s cubic-bezier(.68,-0.55,.27,1.55);
+}
 
-        /* --- 3D Scene Setup --- */
-        .scene {
-            perspective: 1200px; /* Gives real 3D depth to the children */
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2;
-        }
+/* Envelope Base */
+.envelope{
+  width:100%;
+  height:100%;
+  background:var(--sage);
+  position:absolute;
+  bottom:0;
+  border-radius:6px;
+  box-shadow:0 15px 35px var(--shadow);
+  overflow:hidden;
+}
 
-        /* --- Envelope Construction --- */
-        .envelope-wrapper {
-            position: relative;
-            width: 90vw;
-            max-width: 500px;
-            height: 60vw;
-            max-height: 330px;
-            transform-style: preserve-3d;
-            cursor: pointer;
-            transition: filter 0.3s ease;
-            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
-        }
+/* Envelope Flap */
+.flap{
+  width:100%;
+  height:120px;
+  background:linear-gradient(to bottom, #aabf97, var(--sage));
+  position:absolute;
+  top:0;
+  left:0;
+  transform-origin:top;
+  transition:transform 1.8s cubic-bezier(.68,-0.55,.27,1.55);
+  clip-path:polygon(0 0,100% 0,50% 100%);
+}
 
-        .envelope-wrapper:hover {
-            filter: drop-shadow(0 25px 50px rgba(0,0,0,0.4));
-        }
+/* Card */
+.card{
+  width:90%;
+  height:240px;
+  background:var(--cream);
+  position:absolute;
+  left:5%;
+  bottom:-200px;
+  border-radius:8px;
+  box-shadow:0 15px 30px rgba(0,0,0,0.2);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  transition:transform 1.8s cubic-bezier(.68,-0.55,.27,1.55);
+}
 
-        /* Envelope Parts Shared Styles */
-        .env-part {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: var(--env-color);
-        }
+/* Text Styling */
+.names{
+  font-family:'Great Vibes', cursive;
+  font-size:38px;
+  background:linear-gradient(45deg,var(--gold),#e6d18f);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:10px;
+}
 
-        /* Back of envelope */
-        .env-back {
-            background: linear-gradient(to bottom, var(--env-color), var(--env-shadow));
-            transform: translateZ(0px);
-            border-radius: 4px;
-        }
+.save{
+  letter-spacing:3px;
+  font-size:14px;
+  margin-bottom:10px;
+}
 
-        /* Invitation Card */
-        .card {
-            position: absolute;
-            top: 5%; left: 5%;
-            width: 90%; height: 90%;
-            background: var(--card-color);
-            transform: translateZ(1px); /* Sits just in front of the back */
-            border-radius: 8px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            /* Floral watermark simulation */
-            background-image: radial-gradient(circle at top left, rgba(212,175,55,0.05) 0%, transparent 40%),
-                              radial-gradient(circle at bottom right, rgba(212,175,55,0.05) 0%, transparent 40%);
-        }
+.date{
+  font-size:18px;
+  margin-top:8px;
+}
 
-        /* Card Typography */
-        .card-names {
-            font-family: 'Great Vibes', cursive;
-            font-size: 3.5rem;
-            line-height: 1.1;
-            margin-bottom: 10px;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-        }
+/* Button */
+.open-btn{
+  position:absolute;
+  bottom:-60px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:10px 25px;
+  border:none;
+  background:linear-gradient(45deg,var(--gold),#e6d18f);
+  color:white;
+  border-radius:25px;
+  cursor:pointer;
+  font-size:14px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  transition:all .3s ease;
+}
 
-        .card-title {
-            font-size: 1rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #777;
-            margin-bottom: 20px;
-        }
+.open-btn:hover{
+  transform:translateX(-50%) scale(1.05);
+}
 
-        .card-date {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--gold-dark);
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 10px 0;
-        }
+/* Open Animation */
+.open .flap{
+  transform:rotateX(-180deg);
+}
 
-        /* Envelope Flaps */
-        .env-left {
-            clip-path: polygon(0 0, 50% 50%, 0 100%);
-            background: linear-gradient(to right, var(--env-color) 0%, var(--env-shadow) 100%);
-            transform: translateZ(2px);
-        }
+.open .card{
+  transform:translateY(-220px);
+}
 
-        .env-right {
-            clip-path: polygon(100% 0, 100% 100%, 50% 50%);
-            background: linear-gradient(to left, var(--env-color) 0%, var(--env-shadow) 100%);
-            transform: translateZ(3px);
-        }
+/* Subtle floating particles */
+.particle{
+  position:absolute;
+  width:6px;
+  height:6px;
+  background:rgba(255,255,255,0.6);
+  border-radius:50%;
+  animation:float 8s infinite ease-in-out;
+}
 
-        .env-bottom {
-            clip-path: polygon(0 100%, 100% 100%, 50% 40%);
-            background: linear-gradient(to top, var(--env-color) 0%, var(--env-shadow) 100%);
-            transform: translateZ(4px);
-        }
+@keyframes float{
+  0%{transform:translateY(0px);}
+  50%{transform:translateY(-20px);}
+  100%{transform:translateY(0px);}
+}
 
-        .env-top {
-            clip-path: polygon(0 0, 100% 0, 50% 55%);
-            background: linear-gradient(to bottom, #ffffff 0%, var(--env-color) 100%);
-            transform-origin: top center;
-            transform: translateZ(5px); /* Highest z-index initially */
-            z-index: 5;
-        }
-
-        /* Instruction Text */
-        .instruction {
-            position: absolute;
-            bottom: 40px;
-            width: 100%;
-            text-align: center;
-            color: #fff;
-            letter-spacing: 2px;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            animation: pulse 2s infinite ease-in-out;
-            z-index: 10;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; transform: translateY(0); }
-            50% { opacity: 1; transform: translateY(-5px); }
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 600px) {
-            .card-names { font-size: 2.5rem; }
-            .card-title { font-size: 0.8rem; }
-            .card-date { font-size: 1rem; }
-        }
-    </style>
+/* Responsive */
+@media(max-width:480px){
+  .envelope-wrapper{
+    width:260px;
+    height:180px;
+  }
+}
+</style>
 </head>
 <body>
 
-    <div class="vignette"></div>
-    <div id="dust-container"></div>
+<div class="scene">
+  <div class="envelope-wrapper" id="envelope">
+    <div class="envelope"></div>
+    <div class="flap"></div>
 
-    <div class="scene">
-        <div class="envelope-wrapper" id="envelope">
-            <div class="env-part env-back"></div>
-            
-            <div class="card" id="card">
-                <div class="card-names">Crisburn<br>& Kenny</div>
-                <div class="card-title">Save The Date</div>
-                <div class="card-date">28th December 2027</div>
-            </div>
-
-            <div class="env-part env-left"></div>
-            <div class="env-part env-right"></div>
-            <div class="env-part env-bottom"></div>
-            
-            <div class="env-part env-top" id="flap"></div>
-        </div>
+    <div class="card">
+      <div class="names">Crisburn & Kenny</div>
+      <div class="save">SAVE THE DATE</div>
+      <div class="date">28th December 2027</div>
     </div>
 
-    <div class="instruction" id="instruction">TAP TO OPEN</div>
+    <button class="open-btn" onclick="openEnvelope()">Open Invitation</button>
+  </div>
+</div>
 
-    <script>
-        // --- 1. Generate Ambient Dust Particles ---
-        const dustContainer = document.getElementById('dust-container');
-        const particleCount = 40;
+<script>
+function openEnvelope(){
+  document.getElementById("envelope").classList.toggle("open");
+}
 
-        for (let i = 0; i < particleCount; i++) {
-            let dust = document.createElement('div');
-            dust.classList.add('dust');
-            
-            // Randomize size, position, and opacity
-            let size = Math.random() * 4 + 1;
-            dust.style.width = `${size}px`;
-            dust.style.height = `${size}px`;
-            dust.style.left = `${Math.random() * 100}vw`;
-            dust.style.top = `${Math.random() * 100}vh`;
-            dust.style.opacity = Math.random() * 0.5 + 0.1;
+/* Generate floating particles */
+for(let i=0;i<15;i++){
+  const p=document.createElement("div");
+  p.classList.add("particle");
+  p.style.top=Math.random()*100+"%";
+  p.style.left=Math.random()*100+"%";
+  p.style.animationDuration=(5+Math.random()*5)+"s";
+  document.body.appendChild(p);
+}
+</script>
 
-            dustContainer.appendChild(dust);
-
-            // Animate using GSAP for buttery smooth floating
-            gsap.to(dust, {
-                y: `-=${Math.random() * 100 + 50}`,
-                x: `+=${(Math.random() - 0.5) * 50}`,
-                duration: Math.random() * 10 + 10,
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut"
-            });
-        }
-
-        // --- 2. 3D Envelope Cinematic Animation ---
-        const envelope = document.getElementById('envelope');
-        const flap = document.getElementById('flap');
-        const card = document.getElementById('card');
-        const instruction = document.getElementById('instruction');
-        
-        let isOpen = false;
-
-        envelope.addEventListener('click', () => {
-            if (isOpen) return; // Prevent clicking twice
-            isOpen = true;
-
-            // Hide instruction text
-            gsap.to(instruction, { opacity: 0, duration: 0.5 });
-
-            // Create a GSAP Timeline for sequential animation
-            const tl = gsap.timeline();
-
-            // Step 1: Cinematic camera push-in and slight rotation for 3D reveal
-            tl.to(envelope, {
-                scale: 1.15,
-                rotateX: 10,  // Tilt down slightly to see inside
-                duration: 1,
-                ease: "power2.inOut"
-            }, 0)
-            
-            // Step 2: Open the top flap
-            .to(flap, {
-                rotateX: 180, // Folds it backward natively using CSS 3D
-                duration: 1.2,
-                ease: "power3.inOut"
-            }, 0.5) // Starts slightly after camera push-in
-            
-            // Step 3: Slide the card out vertically
-            .to(card, {
-                y: "-70%", // Slides up out of the envelope
-                duration: 1.5,
-                ease: "power2.inOut",
-                boxShadow: "0 20px 40px rgba(0,0,0,0.3)" // Dynamic shadow
-            }, 1.2)
-            
-            // Step 4: Bring the card forward in Z-space so it floats in front of the bottom flap
-            .to(card, {
-                z: 20, // Moves in front of envelope
-                duration: 0.1
-            }, 2.5) // Triggers when the card is near its peak height
-
-            // Step 5: Float down to center and tilt up to the camera
-            .to(card, {
-                y: "-10%", 
-                scale: 1.1,
-                rotateX: -5, // Tilt up to face user
-                rotateY: 2,  // Slight elegant twist
-                duration: 1.5,
-                ease: "back.out(1.2)" // Soft bounce at the end
-            }, 2.6)
-
-            // Step 6: Envelope drops out of focus into the background
-            .to(envelope, {
-                y: "30%",
-                opacity: 0.6,
-                duration: 1.5,
-                ease: "power2.out"
-            }, 2.6);
-        });
-    </script>
 </body>
 </html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sam & Sofia - Wedding Invitation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <div id="curtain-container" onclick="openCurtains()">
+        <div class="curtain left-curtain"></div>
+        <div class="curtain right-curtain"></div>
+        <div class="curtain-text">Tap to Open</div>
+    </div>
+
+    <div class="content">
+        <h1>Sam <br> <span class="ampersand">&</span> <br> Sofia</h1>
+        <p class="subtitle">Scratch to discover the date</p>
+        
+        <div class="scratch-container">
+            <div class="hidden-date">10 Sept 2027</div>
+            <canvas id="scratch-canvas"></canvas>
+        </div>
+
+        <p class="announcement" id="getting-married-text" style="opacity: 0;">We're getting married!</p>
+
+        <div class="countdown-container">
+            <h2>Countdown</h2>
+            <div id="countdown">
+                <div><span id="days">000</span><br><small>Days</small></div>
+                <div><span id="hours">00</span><br><small>Hrs</small></div>
+                <div><span id="minutes">00</span><br><small>Min</small></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

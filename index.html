@@ -3,40 +3,551 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sam & Sofia - Wedding Invitation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title>Crisburn & Kenny - Wedding Invitation</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS Variables for Theming --- */
+        :root {
+            --velvet-dark: #3a0005;
+            --velvet-light: #7a0010;
+            --champagne-bg: linear-gradient(135deg, #fcfaf2 0%, #f3ead3 100%);
+            --gold-gradient: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --text-dark: #2c2c2c;
+            --font-script: 'Great Vibes', cursive;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        /* --- Global Reset & Base --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-serif);
+            color: var(--text-dark);
+            background: var(--champagne-bg);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Vignette overlay for cinematic feel */
+        .vignette {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.4);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* --- 1. Opening Curtains Section --- */
+        #curtain-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .curtain {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, var(--velvet-dark), var(--velvet-light), var(--velvet-dark));
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+            transition: transform 2.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 101;
+        }
+
+        .curtain.left { left: 0; transform-origin: left; border-right: 5px solid rgba(0,0,0,0.5); }
+        .curtain.right { right: 0; transform-origin: right; border-left: 5px solid rgba(0,0,0,0.5); }
+
+        /* Curtain animations triggered by JS */
+        .curtain.left.open { transform: translateX(-100%); }
+        .curtain.right.open { transform: translateX(100%); }
+
+        /* Spotlight effect behind the button */
+        .spotlight {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(0,0,0,0) 70%);
+            z-index: 102;
+            pointer-events: none;
+        }
+
+        .open-btn {
+            position: relative;
+            z-index: 103;
+            padding: 15px 40px;
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: #fff;
+            background: var(--gold-gradient);
+            background-size: 200% auto;
+            border: 2px solid #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            animation: shimmer 3s infinite linear;
+        }
+
+        .open-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(255,215,0,0.4);
+        }
+
+        /* --- 2. Main Invitation Content --- */
+        #main-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 2s ease-in;
+            padding: 50px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        #main-content.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .names {
+            font-family: var(--font-script);
+            font-size: 5rem;
+            line-height: 1.2;
+            margin: 40px 0;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 4px 15px rgba(212, 175, 55, 0.3);
+            animation: fadeIn 3s ease;
+        }
+
+        .message {
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        /* --- 3. Scratch-Off Reveal --- */
+        .scratch-container {
+            position: relative;
+            width: 320px;
+            height: 120px;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            background: #fff;
+            border: 2px solid #d4af37;
+        }
+
+        .hidden-date {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #d4af37;
+            z-index: 1;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        #save-the-date-text {
+            opacity: 0;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: #d4af37;
+            font-style: italic;
+            transition: opacity 1.5s ease;
+        }
+
+        /* --- 4. Extra Features --- */
+        .countdown {
+            margin: 50px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .time-box {
+            background: rgba(255,255,255,0.6);
+            padding: 15px;
+            border-radius: 12px;
+            min-width: 80px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 40px 0;
+        }
+
+        .action-btn {
+            padding: 12px 30px;
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: #fff;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+        }
+
+        .map-placeholder {
+            width: 100%;
+            max-width: 800px;
+            height: 300px;
+            margin: 0 auto;
+            background: #e9e5db;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
+            border: 1px dashed #ccc;
+        }
+
+        /* Particles container */
+        #particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Animations */
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            .names { font-size: 3.5rem; }
+            .countdown { gap: 10px; }
+            .time-box { min-width: 60px; padding: 10px; }
+            .time-box span { font-size: 1.5rem; }
+            .message { padding: 0 15px; }
+        }
+    </style>
 </head>
 <body>
 
-    <div id="curtain-container" onclick="openCurtains()">
-        <div class="curtain left-curtain"></div>
-        <div class="curtain right-curtain"></div>
-        <div class="curtain-text">Tap to Open</div>
+    <div class="vignette"></div>
+    <div id="particles"></div>
+
+    <div id="curtain-wrapper">
+        <div class="curtain left" id="curtain-left"></div>
+        <div class="spotlight"></div>
+        <button class="open-btn" id="open-btn">Open Invitation</button>
+        <div class="curtain right" id="curtain-right"></div>
     </div>
 
-    <div class="content">
-        <h1>Sam <br> <span class="ampersand">&</span> <br> Sofia</h1>
-        <p class="subtitle">Scratch to discover the date</p>
+    <div id="main-content">
+        <h1 class="names">Crisburn<br>&<br>Kenny</h1>
         
+        <p class="message">
+            We joyfully invite you to share in our happiness as we unite in marriage. <br>
+            Join us for a night of romance, celebration, and unforgettable memories.
+        </p>
+
+        <h2 style="margin-bottom: 20px; font-weight: normal; font-size: 1.2rem;">Scratch to reveal the date</h2>
         <div class="scratch-container">
-            <div class="hidden-date">10 Sept 2027</div>
-            <canvas id="scratch-canvas"></canvas>
+            <div class="hidden-date">28th Dec 2027</div>
+            <canvas id="scratch-card"></canvas>
+        </div>
+        <div id="save-the-date-text">✨ Save The Date ✨</div>
+
+        <div class="countdown" id="countdown">
+            <div class="time-box"><span id="days">00</span>Days</div>
+            <div class="time-box"><span id="hours">00</span>Hours</div>
+            <div class="time-box"><span id="mins">00</span>Mins</div>
+            <div class="time-box"><span id="secs">00</span>Secs</div>
         </div>
 
-        <p class="announcement" id="getting-married-text" style="opacity: 0;">We're getting married!</p>
-
-        <div class="countdown-container">
-            <h2>Countdown</h2>
-            <div id="countdown">
-                <div><span id="days">000</span><br><small>Days</small></div>
-                <div><span id="hours">00</span><br><small>Hrs</small></div>
-                <div><span id="minutes">00</span><br><small>Min</small></div>
-            </div>
+        <div class="btn-group">
+            <button class="action-btn" onclick="downloadICS()">Add to Calendar</button>
+            <a href="#rsvp" class="action-btn">RSVP Now</a>
         </div>
+
+        <div class="map-placeholder" id="rsvp">
+            Google Maps Embed Placeholder <br> (Venue Details)
+        </div>
+        <br><br><br>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // --- 1. Curtain Logic ---
+        const openBtn = document.getElementById('open-btn');
+        const curtainLeft = document.getElementById('curtain-left');
+        const curtainRight = document.getElementById('curtain-right');
+        const curtainWrapper = document.getElementById('curtain-wrapper');
+        const mainContent = document.getElementById('main-content');
+
+        openBtn.addEventListener('click', () => {
+            // Hide button and spotlight
+            openBtn.style.display = 'none';
+            document.querySelector('.spotlight').style.display = 'none';
+            
+            // Slide curtains open
+            curtainLeft.classList.add('open');
+            curtainRight.classList.add('open');
+            
+            // Fade in main content
+            setTimeout(() => {
+                curtainWrapper.style.display = 'none'; // Remove from flow
+                mainContent.classList.add('visible');
+                initParticles(); // Start background floating particles
+            }, 2000); // Wait for transition
+        });
+
+        // --- 2. Canvas Scratch-Off Logic ---
+        const canvas = document.getElementById('scratch-card');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const saveTheDateText = document.getElementById('save-the-date-text');
+        
+        // Setup Canvas Size
+        canvas.width = 320;
+        canvas.height = 120;
+
+        // Draw Gold Overlay
+        function fillGoldOverlay() {
+            let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#bf953f');
+            gradient.addColorStop(0.5, '#fcf6ba');
+            gradient.addColorStop(1, '#aa771c');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add instructions to canvas
+            ctx.fillStyle = '#665017';
+            ctx.font = '16px "Playfair Display", serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Scratch Here', canvas.width/2, canvas.height/2 + 6);
+        }
+        fillGoldOverlay();
+
+        // Scratch functionality
+        let isDrawing = false;
+        let isRevealed = false;
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function scratch(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getMousePos(e);
+            
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 30, 0, Math.PI * 2); // 30px brush
+            ctx.fill();
+
+            checkReveal();
+        }
+
+        // Event Listeners for Mouse and Touch
+        canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('mouseup', () => { isDrawing = false; });
+        canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+
+        canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, {passive: false});
+        canvas.addEventListener('touchmove', scratch, {passive: false});
+        canvas.addEventListener('touchend', () => { isDrawing = false; });
+
+        // Throttle check to avoid lag
+        let lastCheck = 0;
+        function checkReveal() {
+            if (isRevealed) return;
+            const now = Date.now();
+            if (now - lastCheck < 100) return; // Check every 100ms
+            lastCheck = now;
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            let transparentPixels = 0;
+
+            // Check alpha channel (every 4th value)
+            for (let i = 3; i < pixels.length; i += 4) {
+                if (pixels[i] === 0) {
+                    transparentPixels++;
+                }
+            }
+
+            const percentage = (transparentPixels / (pixels.length / 4)) * 100;
+
+            if (percentage > 50) {
+                isRevealed = true;
+                // Clear the rest smoothly
+                canvas.style.transition = 'opacity 0.5s ease';
+                canvas.style.opacity = '0';
+                setTimeout(() => canvas.style.display = 'none', 500);
+                
+                // Show text and throw confetti
+                saveTheDateText.style.opacity = '1';
+                fireConfetti();
+            }
+        }
+
+        // --- 3. Extra Features (Countdown, Confetti, Particles, ICS) ---
+        
+        // Countdown Timer to Dec 28, 2027
+        const targetDate = new Date('December 28, 2027 00:00:00').getTime();
+        setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if(distance < 0) return; // Event passed
+
+            document.getElementById('days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+            document.getElementById('hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+            document.getElementById('mins').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            document.getElementById('secs').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+        }, 1000);
+
+        // Subtle Floating Particles
+        function initParticles() {
+            const container = document.getElementById('particles');
+            for(let i=0; i<20; i++) {
+                let particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = Math.random() * 6 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.background = 'rgba(212, 175, 55, 0.4)';
+                particle.style.borderRadius = '50%';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * -20 + 'vh';
+                particle.style.animation = `fall ${Math.random() * 10 + 10}s linear infinite`;
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Confetti Burst Effect
+        function fireConfetti() {
+            const colors = ['#d4af37', '#fff', '#fcf6ba'];
+            for (let i = 0; i < 50; i++) {
+                let confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = canvas.getBoundingClientRect().left + (canvas.width / 2) + 'px';
+                confetti.style.top = canvas.getBoundingClientRect().top + 'px';
+                confetti.style.zIndex = '9999';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                
+                // Random flight math
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 5 + Math.random() * 15;
+                let x = 0; let y = 0;
+                
+                document.body.appendChild(confetti);
+
+                let frame = 0;
+                function animateConfetti() {
+                    frame++;
+                    x += Math.cos(angle) * velocity;
+                    y += Math.sin(angle) * velocity + (frame * 0.5); // gravity
+                    confetti.style.transform = `translate(${x}px, ${y}px) rotate(${frame * 5}deg)`;
+                    
+                    if (y < window.innerHeight) {
+                        requestAnimationFrame(animateConfetti);
+                    } else {
+                        confetti.remove();
+                    }
+                }
+                animateConfetti();
+            }
+        }
+
+        // Generate and download .ics Calendar File
+        function downloadICS() {
+            const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Crisburn & Kenny Wedding//EN
+BEGIN:VEVENT
+UID:${new Date().getTime()}@wedding.local
+DTSTAMP:${new Date().toISOString().replace(/-|:|\.\d+/g, '')}
+DTSTART:20271228T160000Z
+DTEND:20271228T230000Z
+SUMMARY:Crisburn & Kenny's Wedding
+DESCRIPTION:Join us to celebrate the wedding of Crisburn & Kenny!
+LOCATION:TBD
+END:VEVENT
+END:VCALENDAR`;
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute('download', 'Crisburn_Kenny_Wedding.ics');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </body>
 </html>
